@@ -18,7 +18,6 @@
       box-sizing: border-box;
     }
 
-    /* Premium Glassmorphism Effect */
     body {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       background-attachment: fixed;
@@ -37,7 +36,6 @@
       z-index: 0;
     }
 
-    /* Premium Card Styles */
     .glass-card {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -51,7 +49,6 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     }
 
-    /* Premium Button Styles */
     .btn-premium {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -64,23 +61,15 @@
       box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
 
-    /* Animation */
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .animate-fadeInUp {
       animation: fadeInUp 0.5s ease-out;
     }
 
-    /* Table Styles */
     .premium-table {
       border-collapse: separate;
       border-spacing: 0 8px;
@@ -89,7 +78,6 @@
     .premium-table tbody tr {
       background: white;
       transition: all 0.3s ease;
-      cursor: pointer;
     }
 
     .premium-table tbody tr:hover {
@@ -97,7 +85,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    /* Loading Spinner */
     .spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #667eea;
@@ -112,7 +99,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Toast Notification */
     .toast {
       position: fixed;
       top: 20px;
@@ -129,30 +115,16 @@
       gap: 12px;
     }
 
-    .toast.success {
-      border-left: 4px solid #10b981;
-    }
-
-    .toast.error {
-      border-left: 4px solid #ef4444;
-    }
-
-    .toast.info {
-      border-left: 4px solid #3b82f6;
-    }
+    .toast.success { border-left: 4px solid #10b981; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast.info { border-left: 4px solid #3b82f6; }
+    .toast.warning { border-left: 4px solid #f59e0b; }
 
     @keyframes slideInRight {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
-    /* Stat Card */
     .stat-card {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -166,7 +138,6 @@
       box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
     }
 
-    /* Copy Button */
     .copy-btn {
       background: #f3f4f6;
       border: none;
@@ -181,21 +152,12 @@
       transform: scale(1.05);
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
-      .stat-card {
-        margin-bottom: 15px;
-      }
-      
-      .toast {
-        min-width: 250px;
-        right: 10px;
-        left: 10px;
-        top: 10px;
-      }
+      .stat-card { margin-bottom: 15px; }
+      .toast { min-width: 250px; right: 10px; left: 10px; top: 10px; }
+      .action-btn { padding: 4px 8px; font-size: 0.75rem; }
     }
 
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -215,56 +177,56 @@
       background: #764ba2;
     }
 
-    /* Modal Premium */
     .modal-premium {
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(5px);
     }
 
-    /* Switch Toggle */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
     }
 
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
+    .action-btn.edit {
+      background-color: #f59e0b;
+      color: white;
+      margin-right: 8px;
     }
 
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 24px;
+    .action-btn.edit:hover {
+      background-color: #d97706;
     }
 
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
+    .action-btn.delete {
+      background-color: #ef4444;
+      color: white;
     }
 
-    input:checked + .slider {
-      background-color: #667eea;
+    .action-btn.delete:hover {
+      background-color: #dc2626;
     }
 
-    input:checked + .slider:before {
-      transform: translateX(26px);
+    .slug-preview {
+      font-family: monospace;
+      background: #f3f4f6;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -418,9 +380,9 @@
   </div>
 </div>
 
-<!-- Edit Modal Premium -->
+<!-- Edit Modal Premium - DENGAN FITUR EDIT SLUG -->
 <div id="editModal" class="fixed inset-0 modal-premium hidden items-center justify-center p-4 z-50">
-  <div class="glass-card p-6 w-full max-w-md transform transition-all">
+  <div class="glass-card p-6 w-full max-w-lg transform transition-all">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold text-gray-800">
         <i class="fas fa-edit text-blue-500 mr-2"></i> Edit Shortlink
@@ -429,32 +391,437 @@
         <i class="fas fa-times text-2xl"></i>
       </button>
     </div>
+    
+    <!-- Edit Slug Field - BARU! -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Short URL</label>
-      <div class="bg-gray-100 p-3 rounded-xl flex items-center justify-between">
-        <code class="text-sm break-all">https://lynkz.site/<span id="currentSlug" class="font-bold text-purple-600"></span></code>
-        <button onclick="copyToClipboard('https://lynkz.site/' + document.getElementById('currentSlug').innerText)" 
-                class="copy-btn ml-2">
-          <i class="fas fa-copy"></i>
-        </button>
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Short URL (Slug) <span class="text-red-500">*</span>
+      </label>
+      <div class="flex items-center gap-2">
+        <span class="text-gray-500 bg-gray-100 px-3 py-2 rounded-l-lg border border-r-0 border-gray-300">
+          https://lynkz.site/
+        </span>
+        <input id="editSlug" 
+               class="flex-1 px-4 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" 
+               placeholder="slug-anda">
       </div>
+      <p class="text-xs text-gray-500 mt-2">
+        <i class="fas fa-info-circle mr-1"></i> 
+        Full URL: <span class="slug-preview">https://lynkz.site/<span id="slugPreviewEdit" class="font-bold text-purple-600"></span></span>
+      </p>
     </div>
-    <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Destination URL</label>
-      <input id="editUrl" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" 
+    
+    <!-- Edit URL Field -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Destination URL <span class="text-red-500">*</span>
+      </label>
+      <input id="editUrl" 
+             class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" 
              placeholder="https://">
     </div>
+    
+    <!-- Warning Box -->
+    <div class="warning-box">
+      <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+      <strong class="text-yellow-800">Perhatian:</strong>
+      <p class="text-sm text-yellow-700 mt-1">
+        Jika Anda mengubah Short URL, link lama akan <span class="font-bold">TIDAK BERFUNGSI</span>. 
+        Pastikan slug baru belum digunakan oleh shortlink lain.
+      </p>
+    </div>
+    
     <div class="flex gap-3">
       <button onclick="closeEdit()" class="flex-1 px-5 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
-        Batal
+        <i class="fas fa-times mr-2"></i> Batal
       </button>
       <button onclick="saveEdit()" class="flex-1 btn-premium py-3 rounded-xl font-semibold">
-        <i class="fas fa-save mr-2"></i> Simpan
+        <i class="fas fa-save mr-2"></i> Simpan Perubahan
       </button>
     </div>
   </div>
 </div>
 
-<script src="app.js"></script>
+<script>
+// Konfigurasi
+const API_BASE = 'https://autumn-disk-fa08.namecheapel.workers.dev';
+let authToken = localStorage.getItem('authToken');
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-xl"></i>
+    <div class="flex-1">${message}</div>
+    <button onclick="this.parentElement.remove()" class="ml-4"><i class="fas fa-times"></i></button>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
+  showToast('URL berhasil disalin!', 'success');
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Authentication
+async function login() {
+  const password = document.getElementById('password').value;
+  const loginError = document.getElementById('loginError');
+  
+  if (!password) {
+    loginError.textContent = 'Password tidak boleh kosong!';
+    loginError.classList.remove('hidden');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      authToken = data.token;
+      localStorage.setItem('authToken', authToken);
+      showToast('Login berhasil! Selamat datang admin.', 'success');
+      loadDashboard();
+    } else {
+      loginError.classList.remove('hidden');
+      showToast('Password salah!', 'error');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showToast('Gagal connect ke server!', 'error');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('authToken');
+  authToken = null;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
+  showToast('Logout berhasil!', 'info');
+}
+
+// Dashboard Functions
+async function loadDashboard() {
+  if (!authToken) return;
+  
+  try {
+    await loadStats();
+    await loadLinks();
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+  } catch (error) {
+    console.error('Load dashboard error:', error);
+    if (error.message.includes('401') || error.message.includes('403')) {
+      logout();
+    }
+  }
+}
+
+async function loadStats() {
+  try {
+    const response = await fetch(`${API_BASE}/api/stats`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    
+    if (response.ok) {
+      const stats = await response.json();
+      document.getElementById('totalLinks').textContent = stats.total_links || 0;
+      document.getElementById('totalClicks').textContent = stats.total_clicks || 0;
+      document.getElementById('todayClicks').textContent = stats.today_clicks || 0;
+    }
+  } catch (error) {
+    console.error('Load stats error:', error);
+  }
+}
+
+async function loadLinks() {
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const tableBody = document.getElementById('table');
+  
+  if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/links`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    
+    if (response.ok) {
+      const links = await response.json();
+      displayLinks(links);
+    } else if (response.status === 401 || response.status === 403) {
+      logout();
+    }
+  } catch (error) {
+    console.error('Load links error:', error);
+    showToast('Gagal memuat data!', 'error');
+  } finally {
+    if (loadingSpinner) loadingSpinner.classList.add('hidden');
+  }
+}
+
+function displayLinks(links) {
+  const tableBody = document.getElementById('table');
+  
+  if (!links || links.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center py-12 text-gray-400">
+          <i class="fas fa-inbox text-4xl mb-3 block"></i>
+          Belum ada data shortlink
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  tableBody.innerHTML = links.map((link, index) => `
+    <tr class="hover:bg-gray-50 transition">
+      <td class="px-6 py-4 font-medium text-gray-600">${index + 1}</td>
+      <td class="px-6 py-4">
+        <div class="flex items-center gap-2">
+          <code class="text-sm bg-gray-100 px-2 py-1 rounded">/${link.slug}</code>
+          <button onclick="copyToClipboard('https://lynkz.site/${link.slug}')" 
+                  class="copy-btn text-xs">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="max-w-xs truncate">
+          <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline text-sm">
+            ${link.url}
+          </a>
+        </div>
+      </td>
+      <td class="px-6 py-4 text-center">
+        <span class="click-count">${formatNumber(link.clicks || 0)}</span>
+      </td>
+      <td class="px-6 py-4 text-sm text-gray-500">
+        ${formatDate(link.created_at)}
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex gap-2">
+          <button onclick="openEdit('${link.slug}', '${escapeHtml(link.url)}')" 
+                  class="action-btn edit">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button onclick="deleteLink('${link.slug}')" 
+                  class="action-btn delete">
+            <i class="fas fa-trash"></i> Hapus
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// CRUD Operations
+async function addLink() {
+  const slug = document.getElementById('slug').value.trim();
+  const url = document.getElementById('url').value.trim();
+  
+  if (!slug || !url) {
+    showToast('Slug dan URL harus diisi!', 'error');
+    return;
+  }
+  
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    showToast('URL harus dimulai dengan http:// atau https://', 'error');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/links`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ slug, url })
+    });
+    
+    if (response.ok) {
+      showToast(`Shortlink /${slug} berhasil dibuat!`, 'success');
+      document.getElementById('slug').value = '';
+      document.getElementById('url').value = '';
+      await loadLinks();
+      await loadStats();
+    } else {
+      const error = await response.json();
+      showToast(error.error || 'Gagal membuat shortlink!', 'error');
+    }
+  } catch (error) {
+    console.error('Add link error:', error);
+    showToast('Gagal membuat shortlink!', 'error');
+  }
+}
+
+// Edit Functions - DENGAN FITUR EDIT SLUG
+let currentEditSlug = null;
+let currentEditOldSlug = null;
+
+function openEdit(slug, url) {
+  currentEditOldSlug = slug;
+  currentEditSlug = slug;
+  document.getElementById('editSlug').value = slug;
+  document.getElementById('currentSlug').textContent = slug;
+  document.getElementById('slugPreviewEdit').textContent = slug;
+  document.getElementById('editUrl').value = url;
+  document.getElementById('editModal').classList.remove('hidden');
+  document.getElementById('editModal').classList.add('flex');
+  
+  // Live preview untuk slug
+  const editSlugInput = document.getElementById('editSlug');
+  editSlugInput.oninput = function() {
+    const newSlug = this.value.trim() || 'slug-anda';
+    document.getElementById('slugPreviewEdit').textContent = newSlug;
+    document.getElementById('currentSlug').textContent = newSlug;
+  };
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.add('hidden');
+  document.getElementById('editModal').classList.remove('flex');
+  currentEditSlug = null;
+  currentEditOldSlug = null;
+}
+
+async function saveEdit() {
+  const newSlug = document.getElementById('editSlug').value.trim();
+  const newUrl = document.getElementById('editUrl').value.trim();
+  
+  if (!newSlug || !newUrl) {
+    showToast('Slug dan URL tidak boleh kosong!', 'error');
+    return;
+  }
+  
+  if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
+    showToast('URL harus dimulai dengan http:// atau https://', 'error');
+    return;
+  }
+  
+  // Validasi slug hanya huruf kecil, angka, dan dash
+  if (!/^[a-z0-9-]+$/.test(newSlug)) {
+    showToast('Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung (-)', 'error');
+    return;
+  }
+  
+  try {
+    // Kirim request dengan old_slug dan new_slug
+    const response = await fetch(`${API_BASE}/api/links`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ 
+        old_slug: currentEditOldSlug,
+        slug: newSlug, 
+        url: newUrl 
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      if (newSlug !== currentEditOldSlug) {
+        showToast(`Shortlink berhasil diupdate! Slug berubah dari /${currentEditOldSlug} menjadi /${newSlug}`, 'success');
+      } else {
+        showToast(`Shortlink /${newSlug} berhasil diupdate!`, 'success');
+      }
+      closeEdit();
+      await loadLinks();
+      await loadStats();
+    } else {
+      showToast(result.error || 'Gagal mengupdate shortlink!', 'error');
+    }
+  } catch (error) {
+    console.error('Update link error:', error);
+    showToast('Gagal mengupdate shortlink!', 'error');
+  }
+}
+
+async function deleteLink(slug) {
+  if (!confirm(`Yakin ingin menghapus shortlink /${slug}?`)) return;
+  
+  try {
+    const response = await fetch(`${API_BASE}/api/links`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ slug })
+    });
+    
+    if (response.ok) {
+      showToast(`Shortlink /${slug} berhasil dihapus!`, 'success');
+      await loadLinks();
+      await loadStats();
+    } else {
+      showToast('Gagal menghapus shortlink!', 'error');
+    }
+  } catch (error) {
+    console.error('Delete link error:', error);
+    showToast('Gagal menghapus shortlink!', 'error');
+  }
+}
+
+async function refreshData() {
+  showToast('Merefresh data...', 'info');
+  await loadLinks();
+  await loadStats();
+}
+
+// Live Preview
+document.addEventListener('DOMContentLoaded', () => {
+  const slugInput = document.getElementById('slug');
+  if (slugInput) {
+    slugInput.addEventListener('input', (e) => {
+      const preview = document.getElementById('slugPreview');
+      if (preview) {
+        preview.textContent = e.target.value || 'your-link';
+      }
+    });
+  }
+  
+  // Auto login if token exists
+  if (authToken) {
+    loadDashboard();
+  }
+  
+  // Enter key login
+  const passwordInput = document.getElementById('password');
+  if (passwordInput) {
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+  }
+});
+</script>
 </body>
 </html>
