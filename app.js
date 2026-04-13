@@ -1,5 +1,5 @@
 // Konfigurasi
-const API_BASE = 'https://autumn-disk-fa08.namecheapel.workers.dev'; // GANTI dengan URL worker Anda
+const API_BASE = 'https://autumn-disk-fa08.namecheapel.workers.dev';
 let authToken = localStorage.getItem('authToken');
 
 // Helper Functions
@@ -26,6 +26,18 @@ function formatDate(dateString) {
   if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Authentication
@@ -77,7 +89,6 @@ async function loadDashboard() {
   try {
     await loadStats();
     await loadLinks();
-    
     document.getElementById('loginBox').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
   } catch (error) {
@@ -98,8 +109,6 @@ async function loadStats() {
       const stats = await response.json();
       document.getElementById('totalLinks').textContent = stats.total_links || 0;
       document.getElementById('totalClicks').textContent = stats.total_clicks || 0;
-      
-      // Simulasi today's clicks (bisa ditambahkan di API nanti)
       document.getElementById('todayClicks').textContent = stats.today_clicks || 0;
     }
   } catch (error) {
@@ -109,9 +118,8 @@ async function loadStats() {
 
 async function loadLinks() {
   const loadingSpinner = document.getElementById('loadingSpinner');
-  const tableBody = document.getElementById('table');
   
-  loadingSpinner.classList.remove('hidden');
+  if (loadingSpinner) loadingSpinner.classList.remove('hidden');
   
   try {
     const response = await fetch(`${API_BASE}/api/links`, {
@@ -128,7 +136,7 @@ async function loadLinks() {
     console.error('Load links error:', error);
     showToast('Gagal memuat data!', 'error');
   } finally {
-    loadingSpinner.classList.add('hidden');
+    if (loadingSpinner) loadingSpinner.classList.add('hidden');
   }
 }
 
@@ -174,7 +182,7 @@ function displayLinks(links) {
       </td>
       <td class="px-6 py-4">
         <div class="flex gap-2">
-          <button onclick="openEdit('${link.slug}', '${escapeHtml(link.url)}')" 
+          <button onclick='openEdit("${link.slug}", "${escapeHtml(link.url)}")' 
                   class="action-btn edit">
             <i class="fas fa-edit"></i> Edit
           </button>
@@ -184,20 +192,8 @@ function displayLinks(links) {
           </button>
         </div>
       </td>
-    </tr>
+    </table>
   `).join('');
-}
-
-function formatNumber(num) {
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-  return num.toString();
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 // CRUD Operations
@@ -215,6 +211,13 @@ async function addLink() {
     return;
   }
   
+  // Validasi slug
+  const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  if (!cleanSlug) {
+    showToast('Format slug tidak valid!', 'error');
+    return;
+  }
+  
   try {
     const response = await fetch(`${API_BASE}/api/links`, {
       method: 'POST',
@@ -222,11 +225,11 @@ async function addLink() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
       },
-      body: JSON.stringify({ slug, url })
+      body: JSON.stringify({ slug: cleanSlug, url })
     });
     
     if (response.ok) {
-      showToast(`Shortlink /${slug} berhasil dibuat!`, 'success');
+      showToast(`Shortlink /${cleanSlug} berhasil dibuat!`, 'success');
       document.getElementById('slug').value = '';
       document.getElementById('url').value = '';
       await loadLinks();
@@ -241,27 +244,37 @@ async function addLink() {
   }
 }
 
-let currentEditSlug = null;
+// ================= EDIT FUNCTIONS (DENGAN EDIT SLUG) =================
+let currentEditOldSlug = null;
 
 function openEdit(slug, url) {
-  currentEditSlug = slug;
-  document.getElementById('currentSlug').textContent = slug;
+  currentEditOldSlug = slug;
+  document.getElementById('editSlug').value = slug;
   document.getElementById('editUrl').value = url;
+  document.getElementById('slugPreviewEdit').textContent = slug;
   document.getElementById('editModal').classList.remove('hidden');
   document.getElementById('editModal').classList.add('flex');
+  
+  // Live preview untuk slug
+  const editSlugInput = document.getElementById('editSlug');
+  editSlugInput.oninput = function() {
+    const newSlug = this.value.trim() || 'slug-anda';
+    document.getElementById('slugPreviewEdit').textContent = newSlug;
+  };
 }
 
 function closeEdit() {
   document.getElementById('editModal').classList.add('hidden');
   document.getElementById('editModal').classList.remove('flex');
-  currentEditSlug = null;
+  currentEditOldSlug = null;
 }
 
 async function saveEdit() {
+  const newSlug = document.getElementById('editSlug').value.trim();
   const newUrl = document.getElementById('editUrl').value.trim();
   
-  if (!newUrl) {
-    showToast('URL tidak boleh kosong!', 'error');
+  if (!newSlug || !newUrl) {
+    showToast('Slug dan URL tidak boleh kosong!', 'error');
     return;
   }
   
@@ -270,22 +283,43 @@ async function saveEdit() {
     return;
   }
   
+  // Validasi slug (hanya huruf kecil, angka, dan dash)
+  const cleanSlug = newSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  if (!cleanSlug) {
+    showToast('Slug hanya boleh berisi huruf, angka, dan tanda hubung (-)', 'error');
+    return;
+  }
+  
   try {
+    const requestBody = { slug: cleanSlug, url: newUrl };
+    
+    // Jika slug berubah, kirim old_slug
+    if (currentEditOldSlug && currentEditOldSlug !== cleanSlug) {
+      requestBody.old_slug = currentEditOldSlug;
+    }
+    
     const response = await fetch(`${API_BASE}/api/links`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`
       },
-      body: JSON.stringify({ slug: currentEditSlug, url: newUrl })
+      body: JSON.stringify(requestBody)
     });
     
+    const result = await response.json();
+    
     if (response.ok) {
-      showToast(`Shortlink /${currentEditSlug} berhasil diupdate!`, 'success');
+      if (currentEditOldSlug !== cleanSlug) {
+        showToast(`Shortlink berhasil diupdate! Slug berubah dari /${currentEditOldSlug} menjadi /${cleanSlug}`, 'success');
+      } else {
+        showToast(`Shortlink /${cleanSlug} berhasil diupdate!`, 'success');
+      }
       closeEdit();
       await loadLinks();
+      await loadStats();
     } else {
-      showToast('Gagal mengupdate shortlink!', 'error');
+      showToast(result.error || 'Gagal mengupdate shortlink!', 'error');
     }
   } catch (error) {
     console.error('Update link error:', error);
@@ -325,14 +359,15 @@ async function refreshData() {
   await loadStats();
 }
 
-// Live Preview
+// Live Preview untuk slug di form tambah
 document.addEventListener('DOMContentLoaded', () => {
   const slugInput = document.getElementById('slug');
   if (slugInput) {
     slugInput.addEventListener('input', (e) => {
       const preview = document.getElementById('slugPreview');
       if (preview) {
-        preview.textContent = e.target.value || 'your-link';
+        const cleanSlug = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        preview.textContent = cleanSlug || 'your-link';
       }
     });
   }
