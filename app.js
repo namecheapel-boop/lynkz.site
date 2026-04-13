@@ -1,5 +1,5 @@
 // Konfigurasi
-const API_BASE = 'https://autumn-disk-fa08.namecheapel.workers.dev'; // GANTI dengan URL worker Anda
+const API_BASE = 'https://lynkz.namecheapel.workers.dev'; // GANTI dengan URL worker Anda
 let authToken = localStorage.getItem('authToken');
 
 // Helper Functions
