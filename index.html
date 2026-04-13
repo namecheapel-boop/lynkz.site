@@ -1,353 +1,460 @@
-
-// Konfigurasi
-const API_BASE = 'https://autumn-disk-fa08.namecheapel.workers.dev'; // GANTI dengan URL worker Anda
-let authToken = localStorage.getItem('authToken');
-
-// Helper Functions
-function showToast(message, type = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `
-    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} text-xl"></i>
-    <div class="flex-1">${message}</div>
-    <button onclick="this.parentElement.remove()" class="ml-4">
-      <i class="fas fa-times"></i>
-    </button>
-  `;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text);
-  showToast('URL berhasil disalin!', 'success');
-}
-
-function formatDate(dateString) {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-// Authentication
-async function login() {
-  const password = document.getElementById('password').value;
-  const loginError = document.getElementById('loginError');
-  
-  if (!password) {
-    loginError.textContent = 'Password tidak boleh kosong!';
-    loginError.classList.remove('hidden');
-    return;
-  }
-  
-  try {
-    const response = await fetch(`${API_BASE}/api/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      authToken = data.token;
-      localStorage.setItem('authToken', authToken);
-      showToast('Login berhasil! Selamat datang admin.', 'success');
-      loadDashboard();
-    } else {
-      loginError.classList.remove('hidden');
-      showToast('Password salah!', 'error');
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co.com/99XczsCB/pngegg-1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co.com/99XczsCB/pngegg-1.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co.com/99XczsCB/pngegg-1.png">
+  <title>Admin Dashboard - Premium Shortlink</title>
+  <meta name="description" content="Admin Panel untuk mengelola shortlink">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    showToast('Gagal connect ke server!', 'error');
-  }
-}
 
-function logout() {
-  localStorage.removeItem('authToken');
-  authToken = null;
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('loginBox').classList.remove('hidden');
-  showToast('Logout berhasil!', 'info');
-}
-
-// Dashboard Functions
-async function loadDashboard() {
-  if (!authToken) return;
-  
-  try {
-    await loadStats();
-    await loadLinks();
-    
-    document.getElementById('loginBox').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-  } catch (error) {
-    console.error('Load dashboard error:', error);
-    if (error.message.includes('401') || error.message.includes('403')) {
-      logout();
+    /* Premium Glassmorphism Effect */
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      position: relative;
     }
-  }
-}
 
-async function loadStats() {
-  try {
-    const response = await fetch(`${API_BASE}/api/stats`, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
-    });
-    
-    if (response.ok) {
-      const stats = await response.json();
-      document.getElementById('totalLinks').textContent = stats.total_links || 0;
-      document.getElementById('totalClicks').textContent = stats.total_clicks || 0;
-      
-      // Simulasi today's clicks (bisa ditambahkan di API nanti)
-      document.getElementById('todayClicks').textContent = stats.today_clicks || 0;
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('https://i.ibb.co.com/ymTyZtFh/pngegg-2.png-caacff5cfa74?q=80&w=2070&auto=format&fit=crop') center/cover fixed;
+      opacity: 0.1;
+      z-index: 0;
     }
-  } catch (error) {
-    console.error('Load stats error:', error);
-  }
-}
 
-async function loadLinks() {
-  const loadingSpinner = document.getElementById('loadingSpinner');
-  const tableBody = document.getElementById('table');
-  
-  loadingSpinner.classList.remove('hidden');
-  
-  try {
-    const response = await fetch(`${API_BASE}/api/links`, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
-    });
-    
-    if (response.ok) {
-      const links = await response.json();
-      displayLinks(links);
-    } else if (response.status === 401 || response.status === 403) {
-      logout();
+    /* Premium Card Styles */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
-  } catch (error) {
-    console.error('Load links error:', error);
-    showToast('Gagal memuat data!', 'error');
-  } finally {
-    loadingSpinner.classList.add('hidden');
-  }
-}
 
-function displayLinks(links) {
-  const tableBody = document.getElementById('table');
-  
-  if (!links || links.length === 0) {
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="6" class="text-center py-12 text-gray-400">
-          <i class="fas fa-inbox text-4xl mb-3 block"></i>
-          Belum ada data shortlink
-        </td>
-      </tr>
-    `;
-    return;
-  }
-  
-  tableBody.innerHTML = links.map((link, index) => `
-    <tr class="hover:bg-gray-50 transition">
-      <td class="px-6 py-4 font-medium text-gray-600">${index + 1}</td>
-      <td class="px-6 py-4">
-        <div class="flex items-center gap-2">
-          <code class="text-sm bg-gray-100 px-2 py-1 rounded">/${link.slug}</code>
-          <button onclick="copyToClipboard('https://vip.bs-akses.com/${link.slug}')" 
-                  class="copy-btn text-xs">
-            <i class="fas fa-copy"></i>
-          </button>
-        </div>
-      </td>
-      <td class="px-6 py-4">
-        <div class="max-w-xs truncate">
-          <a href="${link.url}" target="_blank" class="text-blue-600 hover:underline text-sm">
-            ${link.url}
-          </a>
-        </div>
-      </td>
-      <td class="px-6 py-4 text-center">
-        <span class="click-count">${formatNumber(link.clicks || 0)}</span>
-      </td>
-      <td class="px-6 py-4 text-sm text-gray-500">
-        ${formatDate(link.created_at)}
-      </td>
-      <td class="px-6 py-4">
-        <div class="flex gap-2">
-          <button onclick="openEdit('${link.slug}', '${escapeHtml(link.url)}')" 
-                  class="action-btn edit">
-            <i class="fas fa-edit"></i> Edit
-          </button>
-          <button onclick="deleteLink('${link.slug}')" 
-                  class="action-btn delete">
-            <i class="fas fa-trash"></i> Hapus
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function formatNumber(num) {
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-  return num.toString();
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-// CRUD Operations
-async function addLink() {
-  const slug = document.getElementById('slug').value.trim();
-  const url = document.getElementById('url').value.trim();
-  
-  if (!slug || !url) {
-    showToast('Slug dan URL harus diisi!', 'error');
-    return;
-  }
-  
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    showToast('URL harus dimulai dengan http:// atau https://', 'error');
-    return;
-  }
-  
-  try {
-    const response = await fetch(`${API_BASE}/api/links`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ slug, url })
-    });
-    
-    if (response.ok) {
-      showToast(`Shortlink /${slug} berhasil dibuat!`, 'success');
-      document.getElementById('slug').value = '';
-      document.getElementById('url').value = '';
-      await loadLinks();
-      await loadStats();
-    } else {
-      const error = await response.json();
-      showToast(error.error || 'Gagal membuat shortlink!', 'error');
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     }
-  } catch (error) {
-    console.error('Add link error:', error);
-    showToast('Gagal membuat shortlink!', 'error');
-  }
-}
 
-let currentEditSlug = null;
-
-function openEdit(slug, url) {
-  currentEditSlug = slug;
-  document.getElementById('currentSlug').textContent = slug;
-  document.getElementById('editUrl').value = url;
-  document.getElementById('editModal').classList.remove('hidden');
-  document.getElementById('editModal').classList.add('flex');
-}
-
-function closeEdit() {
-  document.getElementById('editModal').classList.add('hidden');
-  document.getElementById('editModal').classList.remove('flex');
-  currentEditSlug = null;
-}
-
-async function saveEdit() {
-  const newUrl = document.getElementById('editUrl').value.trim();
-  
-  if (!newUrl) {
-    showToast('URL tidak boleh kosong!', 'error');
-    return;
-  }
-  
-  if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
-    showToast('URL harus dimulai dengan http:// atau https://', 'error');
-    return;
-  }
-  
-  try {
-    const response = await fetch(`${API_BASE}/api/links`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ slug: currentEditSlug, url: newUrl })
-    });
-    
-    if (response.ok) {
-      showToast(`Shortlink /${currentEditSlug} berhasil diupdate!`, 'success');
-      closeEdit();
-      await loadLinks();
-    } else {
-      showToast('Gagal mengupdate shortlink!', 'error');
+    /* Premium Button Styles */
+    .btn-premium {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      transition: all 0.3s ease;
     }
-  } catch (error) {
-    console.error('Update link error:', error);
-    showToast('Gagal mengupdate shortlink!', 'error');
-  }
-}
 
-async function deleteLink(slug) {
-  if (!confirm(`Yakin ingin menghapus shortlink /${slug}?`)) return;
-  
-  try {
-    const response = await fetch(`${API_BASE}/api/links`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ slug })
-    });
-    
-    if (response.ok) {
-      showToast(`Shortlink /${slug} berhasil dihapus!`, 'success');
-      await loadLinks();
-      await loadStats();
-    } else {
-      showToast('Gagal menghapus shortlink!', 'error');
+    .btn-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
     }
-  } catch (error) {
-    console.error('Delete link error:', error);
-    showToast('Gagal menghapus shortlink!', 'error');
-  }
-}
 
-async function refreshData() {
-  showToast('Merefresh data...', 'info');
-  await loadLinks();
-  await loadStats();
-}
-
-// Live Preview
-document.addEventListener('DOMContentLoaded', () => {
-  const slugInput = document.getElementById('slug');
-  if (slugInput) {
-    slugInput.addEventListener('input', (e) => {
-      const preview = document.getElementById('slugPreview');
-      if (preview) {
-        preview.textContent = e.target.value || 'your-link';
+    /* Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
-    });
-  }
-  
-  // Auto login if token exists
-  if (authToken) {
-    loadDashboard();
-  }
-  
-  // Enter key login
-  const passwordInput = document.getElementById('password');
-  if (passwordInput) {
-    passwordInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') login();
-    });
-  }
-});
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fadeInUp {
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    /* Table Styles */
+    .premium-table {
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+
+    .premium-table tbody tr {
+      background: white;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .premium-table tbody tr:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      min-width: 300px;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      animation: slideInRight 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast.success {
+      border-left: 4px solid #10b981;
+    }
+
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .toast.info {
+      border-left: 4px solid #3b82f6;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Stat Card */
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Copy Button */
+    .copy-btn {
+      background: #f3f4f6;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: #e5e7eb;
+      transform: scale(1.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stat-card {
+        margin-bottom: 15px;
+      }
+      
+      .toast {
+        min-width: 250px;
+        right: 10px;
+        left: 10px;
+        top: 10px;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #764ba2;
+    }
+
+    /* Modal Premium */
+    .modal-premium {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    /* Switch Toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #667eea;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative">
+
+<div id="app" class="relative z-10">
+  <!-- LOGIN SECTION -->
+  <div id="loginBox" class="flex items-center justify-center min-h-screen p-4">
+    <div class="glass-card p-8 w-full max-w-md animate-fadeInUp">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-link text-3xl text-white"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Shortlink Premium</h1>
+        <p class="text-gray-600">Admin Dashboard</p>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <div class="relative">
+          <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input id="password" type="password" placeholder="Masukkan password admin"
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+            autocomplete="current-password">
+        </div>
+      </div>
+      
+      <button onclick="login()"
+        class="w-full btn-premium py-3 rounded-xl font-semibold text-lg transition">
+        <i class="fas fa-sign-in-alt mr-2"></i> Login
+      </button>
+      
+      <p id="loginError" class="text-red-500 text-sm mt-4 text-center hidden">
+        <i class="fas fa-exclamation-circle mr-1"></i> Password salah, coba lagi!
+      </p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SECTION -->
+  <div id="dashboard" class="hidden p-4 md:p-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header Premium -->
+      <div class="glass-card p-6 mb-6 animate-fadeInUp">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <i class="fas fa-crown text-white text-xl"></i>
+              </div>
+              <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Shortlink Premium</h1>
+                <p class="text-gray-600 text-sm">Kelola semua shortlink Anda dengan mudah</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-4 md:mt-0">
+            <button onclick="refreshData()" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition">
+              <i class="fas fa-sync-alt mr-2"></i> Refresh
+            </button>
+            <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition">
+              <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="stat-card animate-fadeInUp" style="animation-delay: 0.1s">
+          <i class="fas fa-link text-3xl mb-3 opacity-80"></i>
+          <h3 class="text-sm font-medium opacity-90">Total Links</h3>
+          <p class="text-3xl font-bold mt-2" id="totalLinks">0</p>
+        </div>
+        <div class="stat-card animate-fadeInUp" style="animation-delay: 0.2s; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <i class="fas fa-chart-line text-3xl mb-3 opacity-80"></i>
+          <h3 class="text-sm font-medium opacity-90">Total Clicks</h3>
+          <p class="text-3xl font-bold mt-2" id="totalClicks">0</p>
+        </div>
+        <div class="stat-card animate-fadeInUp" style="animation-delay: 0.3s; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <i class="fas fa-calendar-day text-3xl mb-3 opacity-80"></i>
+          <h3 class="text-sm font-medium opacity-90">Today's Clicks</h3>
+          <p class="text-3xl font-bold mt-2" id="todayClicks">0</p>
+        </div>
+      </div>
+
+      <!-- Add Link Form Premium -->
+      <div class="glass-card p-6 mb-6 animate-fadeInUp" style="animation-delay: 0.4s">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+          <i class="fas fa-plus-circle text-green-500 mr-2"></i> Buat Shortlink Baru
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Slug</label>
+            <input id="slug" placeholder="contoh: my-link"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition">
+            <p class="text-xs text-gray-500 mt-2">
+              <i class="fas fa-link mr-1"></i> Preview: 
+              <span id="slugPreview" class="font-mono text-purple-600 font-semibold">your-link</span>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Destination URL</label>
+            <input id="url" placeholder="https://example.com" type="url"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition">
+          </div>
+        </div>
+        <div class="mt-4">
+          <button onclick="addLink()" class="btn-premium px-6 py-3 rounded-xl font-semibold w-full md:w-auto">
+            <i class="fas fa-magic mr-2"></i> Buat Shortlink
+          </button>
+        </div>
+      </div>
+
+      <!-- Links Table Premium -->
+      <div class="glass-card overflow-hidden animate-fadeInUp" style="animation-delay: 0.5s">
+        <div class="p-6 border-b border-gray-200">
+          <h2 class="text-xl font-bold text-gray-800">
+            <i class="fas fa-table-list text-purple-500 mr-2"></i> Daftar Shortlink
+          </h2>
+        </div>
+        
+        <div id="loadingSpinner" class="hidden p-12 text-center">
+          <div class="spinner mx-auto"></div>
+          <p class="mt-4 text-gray-500">Loading data...</p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="premium-table w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">#</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Short URL</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Destination</th>
+                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Clicks</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Created</th>
+                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table">
+              <tr>
+                <td colspan="6" class="text-center py-12 text-gray-400">
+                  <i class="fas fa-inbox text-4xl mb-3 block"></i>
+                  Belum ada data shortlink
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal Premium -->
+<div id="editModal" class="fixed inset-0 modal-premium hidden items-center justify-center p-4 z-50">
+  <div class="glass-card p-6 w-full max-w-md transform transition-all">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-edit text-blue-500 mr-2"></i> Edit Shortlink
+      </h2>
+      <button onclick="closeEdit()" class="text-gray-400 hover:text-gray-600">
+        <i class="fas fa-times text-2xl"></i>
+      </button>
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Short URL</label>
+      <div class="bg-gray-100 p-3 rounded-xl flex items-center justify-between">
+        <code class="text-sm break-all">https://vip.bs-akses.com/<span id="currentSlug" class="font-bold text-purple-600"></span></code>
+        <button onclick="copyToClipboard('https://vip.bs-akses.com/' + document.getElementById('currentSlug').innerText)" 
+                class="copy-btn ml-2">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Destination URL</label>
+      <input id="editUrl" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" 
+             placeholder="https://">
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeEdit()" class="flex-1 px-5 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+        Batal
+      </button>
+      <button onclick="saveEdit()" class="flex-1 btn-premium py-3 rounded-xl font-semibold">
+        <i class="fas fa-save mr-2"></i> Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
